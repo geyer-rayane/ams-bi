@@ -1,0 +1,27 @@
+{
+  "date_reference_extraction": "2007-01-01",
+  "cible": "cible_churn (1 = démission, DTDEM != 31/12/1900)",
+  "sentinelles": {
+    "DTNAIS": "0000-00-00 -> age_2007 NaN puis imputation médiane pour scaler",
+    "DTDEM": "31/12/1900 -> cible 0"
+  },
+  "derivations": [
+    "age_2007 depuis DTNAIS",
+    "anciennete_adh_ans depuis DTADH",
+    "MTREV_discrete quantiles"
+  ],
+  "normalisation": {
+    "z_*": "StandardScaler (moyenne 0, écart-type 1) sur bloc numérique",
+    "mm_*": "MinMaxScaler [0,1] sur le même bloc"
+  },
+  "categoriel": "one-hot (sit_*, mot_*) ; CDMOTDEM manquant recodé __MANQUANT__",
+  "algorithmes": {
+    "arbres_SVM_naive_bayes": "souvent mieux avec variables peu transformées ou discrétisées ; normalisation moins critique pour arbres",
+    "regression_logistique_reseaux": "normalisation / one-hot recommandées",
+    "knn": "normalisation indispensable pour distances"
+  },
+  "dimensions": {
+    "n_lignes": 15022,
+    "n_colonnes": 35
+  }
+}

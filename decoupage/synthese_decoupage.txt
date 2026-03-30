@@ -1,0 +1,8 @@
+=== Découpage train / validation / test ===
+Source : table2_matrice_modele.csv
+Total lignes : 15022
+Apprentissage : 9012 (60.0 %)
+Validation    : 3005 (20.0 %)
+Test          : 3005 (20.0 %)
+
+Fichiers : jeu_apprentissage.csv, jeu_validation.csv, jeu_test.csv, schema_decoupage.json

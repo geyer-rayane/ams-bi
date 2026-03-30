@@ -1,0 +1,39 @@
+\babel@toc {french}{}\relax 
+\contentsline {section}{\numberline {1}Contexte et objectifs}{3}{section.1}%
+\contentsline {section}{\numberline {2}Exploration}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Données et principes}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Outils mis en œuvre}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Organisation des sorties}{3}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Résultats illustrés (sélection)}{3}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Univarié}{3}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}Corrélations entre variables numériques}{3}{subsubsection.2.4.2}%
+\contentsline {subsubsection}{\numberline {2.4.3}Associations quanti--quanti (nuages de points)}{7}{subsubsection.2.4.3}%
+\contentsline {subsubsection}{\numberline {2.4.4}Quanti--quali : boîtes à moustaches}{7}{subsubsection.2.4.4}%
+\contentsline {subsection}{\numberline {2.5}Synthèse et limites de cette phase}{7}{subsection.2.5}%
+\contentsline {section}{\numberline {3}Nettoyage}{7}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Ces données nécessitent-elles un nettoyage ?}{9}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Faut-il écarter certaines instances qui ne sont pas liées au problème ?}{9}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Sur quoi se base-t-on pour prendre cette décision ?}{10}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Y a-t-il des valeurs manquantes ?}{10}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Y a-t-il des valeurs aberrantes ?}{10}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Y a-t-il des attributs redondants ?}{10}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}Y a-t-il des attributs superflus ?}{11}{subsection.3.7}%
+\contentsline {subsection}{\numberline {3.8}Les valeurs numériques correspondent-elles à des grandeurs métriques, ordinales ou catégorielles ?}{11}{subsection.3.8}%
+\contentsline {subsection}{\numberline {3.9}Comment traiter ces différents problèmes ?}{11}{subsection.3.9}%
+\contentsline {section}{\numberline {4}Concaténation}{12}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Faut-il concaténer les tables ?}{12}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Comment concaténer techniquement ?}{13}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Résultats de la concaténation et lecture descriptive}{13}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Choix pour la modélisation (distinct de la concaténation déjà réalisée)}{14}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Recodage}{14}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Principes}{14}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Tester l'effet du codage sur les outils}{14}{subsection.5.2}%
+\contentsline {section}{\numberline {6}Prétraitement}{15}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Réduction de dimension (ACP / PCA)}{15}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Sélection de variables (SelectKBest)}{15}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Comparaison des approches et paramètres}{15}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Découpage}{16}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Rôles des trois jeux}{16}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Mise en œuvre (\texttt {decoupage.py})}{16}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Précaution}{16}{subsection.7.3}%
+\contentsline {section}{\numberline {8}Répartition du travail (phase Exploration)}{16}{section.8}%

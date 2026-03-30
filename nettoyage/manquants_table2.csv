@@ -1,0 +1,13 @@
+﻿table,colonne,n_lignes,manquants_pandas,chaines_vides,total_manquants,pct
+table2,ID,15022,0,0,0,0.0
+table2,CDSEXE,15022,0,0,0,0.0
+table2,DTNAIS,15022,0,0,0,0.0
+table2,MTREV,15022,0,0,0,0.0
+table2,NBENF,15022,0,0,0,0.0
+table2,CDSITFAM,15022,0,0,0,0.0
+table2,DTADH,15022,0,0,0,0.0
+table2,CDTMT,15022,0,0,0,0.0
+table2,CDMOTDEM,15022,14195,0,14195,94.4947
+table2,CDCATCL,15022,0,0,0,0.0
+table2,BPADH,15022,0,0,0,0.0
+table2,DTDEM,15022,0,0,0,0.0

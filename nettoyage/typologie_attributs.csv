@@ -1,0 +1,23 @@
+﻿colonne,nature,commentaire
+ID,identifiant,Exclure du modèle ou clé de jointure interne.
+CDSEXE,nominal_ordinal,Codes sous-classes ; plutôt nominal ou ordinal faible — pas une échelle de rapport.
+MTREV,intervalle_ratio,Revenu : continu ; nombreux zéros et queue lourde → winsorisation / log ou binning.
+NBENF,intervalle_discret,Compte entier ; 0 légitime.
+CDSITFAM,nominal,Situation familiale.
+DTADH,date_brute,Parser en date ; forte cardinalité en chaîne.
+CDTMT,nominal,Statut sociétaire (code).
+CDCATCL,nominal,Type client.
+BPADH,inconnu,Signification inconnue (énoncé) — à clarifier avant usage.
+CDDEM,nominal,Code démission ; quasi constant dans table1.
+DTDEM,date_brute,Date de démission.
+ANNEEDEM,ordinal_intervalle,Année : peut servir de feature temporelle ; liée à DTDEM.
+CDMOTDEM,nominal,Motif démission.
+AGEAD,intervalle,Âge à l'adhésion — variable de prédiction naturelle.
+RANGAGEAD,ordinal,Tranche d'âge à l'adhésion — redondante avec AGEAD si bins cohérents.
+AGEDEM,intervalle,Âge à la démission.
+RANGAGEDEM,ordinal,Tranche âge démission — redondante avec AGEDEM.
+RANGDEM,ordinal,Code année démission format texte — redondant avec ANNEEDEM/DTDEM.
+ADH,intervalle,Ancienneté en années.
+RANGADH,ordinal,Tranche ancienneté — redondante avec ADH ; manquants partiels.
+DTNAIS,date_brute,Date naissance ; sentinelles 0000-00-00 = manquant déclaré.
+DTDEM,date_ou_sentinelle,31/12/1900 = non-démissionnaire (pas une date réelle).

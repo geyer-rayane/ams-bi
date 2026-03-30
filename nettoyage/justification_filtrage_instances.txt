@@ -1,0 +1,10 @@
+=== Filtrage d'instances ===
+Table2 lignes : 15022
+Lignes avec toutes les colonnes NaN (pandas) : 0 — généralement 0.
+
+Recommandation : ne pas supprimer les lignes avec DTNAIS=0000-00-00 ni DTDEM=31/12/1900 :
+  ce sont des non-informations codées, à traiter comme données manquantes ou catégorie « inconnu ».
+
+Exclure des individus « non liés au problème » se justifie seulement après définition formelle
+de la population cible (ex. sociétaires actifs à la date d'extraction 2007) et de la variable
+à prédire ; ce périmètre n'est pas tranché dans ce script.

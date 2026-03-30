@@ -1,0 +1,35 @@
+{
+  "fichier_source": "recodage\\table2_matrice_modele.csv",
+  "n_total": 15022,
+  "proportion_test": 0.2,
+  "proportion_validation_sur_restre": 0.25,
+  "proportion_apprentissage_effectif": 0.5999,
+  "splits": [
+    {
+      "nom": "apprentissage",
+      "n": 9012,
+      "pct_total": 59.99,
+      "n_churn_1": 328,
+      "n_churn_0": 8684,
+      "taux_churn": 0.036396
+    },
+    {
+      "nom": "validation",
+      "n": 3005,
+      "pct_total": 20.0,
+      "n_churn_1": 110,
+      "n_churn_0": 2895,
+      "taux_churn": 0.036606
+    },
+    {
+      "nom": "test",
+      "n": 3005,
+      "pct_total": 20.0,
+      "n_churn_1": 110,
+      "n_churn_0": 2895,
+      "taux_churn": 0.036606
+    }
+  ],
+  "stratification": "cible_churn",
+  "random_state": 42
+}

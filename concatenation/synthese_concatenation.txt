@@ -1,0 +1,9 @@
+=== Concaténation : synthèse ===
+Colonnes communes (10) : CDCATCL, CDMOTDEM, CDSEXE, CDSITFAM, CDTMT, DTADH, DTDEM, ID, MTREV, NBENF
+Lignes table1=30332, table2=15022, union=45354
+Table2 taux démission (DTDEM != 31/12/1900) : 0.0365
+
+Fichiers : resume_strategies.json, echantillon_union_500lignes.csv,
+descriptifs_variables_communes.csv (moyennes/médianes, sans test statistique).
+
+Les IDs d'origine sont dans id_fichier ; ID = identifiant unique dans l'union.

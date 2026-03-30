@@ -1,0 +1,6 @@
+=== Recodage (table2) ===
+Lignes : 15022, matrice modèle : 35 colonnes.
+Fichiers : table2_recodage_brut_derive.csv, table2_matrice_modele.csv,
+echantillon_matrice_modele_300lignes.csv, schema_recodage.json
+
+Effet du codage : à comparer empiriquement selon l'algorithme (voir schema_recodage.json).

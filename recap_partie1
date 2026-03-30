@@ -1,0 +1,23 @@
+Récap global (très simple, avec exemples)
+1. Exploration (exploration.py + dossiers analyse/, graphique/)
+But : comprendre les données (table1 = anciens démissionnaires, table2 = membres actifs).
+Exemples : histogrammes (CDDEM_histogramme.png), heatmaps de corrélation, nuages de points (ex. AGEAD__AGEDEM_nuage.png), CSV de résumés dans exploration/table1/ et exploration/table2/.
+2. Nettoyage (nettoyage.py → nettoyage/)
+But : repérer manquants, valeurs bizarres, outliers (ex. IQR), typer les variables.
+Exemple : fichiers type manquants_table*.csv, textes d’justification (justification_filtrage_instances.txt).
+3. Concaténation (concatenation.py → concatenation/)
+But : empiler verticalement les deux tables sur les colonnes communes, avec une colonne source pour savoir d’où vient chaque ligne.
+Exemples : resume_strategies.json, echantillon_union_500lignes.csv, synthese_concatenation.txt.
+4. Recodage (recodage.py → recodage/)
+But : une matrice prête pour le ML à partir surtout de table2 (cible churn, variables numériques / indicatrices).
+Exemples : table2_matrice_modele.csv (~15 022 lignes, 35 colonnes), schema_recodage.json, échantillon pour contrôle.
+5. Prétraitement (pretraitement.py → pretraitement/)
+But : réduire la dimension (PCA) et/ou sélectionner des variables (ex. SelectKBest).
+Exemples : matrice_pca_95var.csv, pca_variance_expliquee.csv, schema_pretraitement.json.
+6. Découpage (decoupage.py → decoupage/) — que tu as déjà lancé
+But : 3 jeux : apprentissage / validation / test.
+Règle simple : le train apprend le modèle ; la validation choisit les hyperparamètres et compare les modèles ; le test sert une fois à estimer la généralisation.
+Exemples : stratification sur cible_churn, 60 % / 20 % / 20 % → 9 012 / 3 005 / 3 005 lignes ; fichiers jeu_apprentissage.csv, jeu_validation.csv, jeu_test.csv, schema_decoupage.json, synthese_decoupage.txt.
+7. Rapport (latex/rapport.tex → rapport.pdf)
+But : documenter chaque étape (exploration → découpage), figures sous latex/img/, texte en français.
+En une phrase : on a exploré et nettoyé les données, fusionné les deux tables pour analyse, recodé une matrice modèle sur table2, prétraité (PCA / sélection), puis découpé train/val/test pour la suite (modèles de classification).

@@ -1,0 +1,38 @@
+=== NETTOYAGE / PRÉPARATION — SYNTHÈSE (générée par nettoyage.py) ===
+
+1) Ces données nécessitent-elles un nettoyage ?
+   Oui, au sens « préparation pour modélisation » : parser les dates, encoder les catégories,
+   traiter les sentinelles comme manquants ou modalités dédiées, et gérer les outliers
+   sur MTREV (et variables financières) si le modèle l'exige.
+
+2) Faut-il écarter des instances non liées au problème ?
+   Pas de suppression massive recommandée ici : les codes aberrants connus sont des sentinelles.
+   Filtrer des lignes n'est pertinent qu'après définition de la population cible et de la cible Y.
+
+3) Sur quoi se baser pour décider ?
+   Dictionnaire de variables, taux de manquants, corrélation/ redondance (exploration),
+   et contraintes du modèle (ex. arbres vs régression linéaire).
+
+4) Valeurs manquantes (aperçu table1 RANGADH, table2 CDMOTDEM pour non-démissionnaires) :
+   table1 RANGADH manquants : 2584 (8.5191 %).
+   table2 CDMOTDEM vides/NA : 14195 (motif absent si pas démission).
+
+5) Valeurs « aberrantes » au sens énoncé / métier :
+   DTNAIS = 0000-00-00 : 164 (table2).
+   DTDEM = 31/12/1900 (non démissionnaire) : 14474 (table2).
+
+6) Attributs redondants : tranches RANG* vs âges/années numériques ; ANNEEDEM vs dates.
+
+7) Attributs superflus pour scoring : ID ; possiblement doublons informationnels (RANG* si AGE* gardé).
+   BPADH : superflu tant que la définition métier est inconnue.
+
+8) Entiers lus par pandas : souvent catégoriels (CDSEXE, CDTMT) ou ordinaux — ne pas assimiler
+   à une échelle de rapport sans vérification.
+
+9) Traitements possibles : imputation / catégorie 'manquant', one-hot ou cibles de catégories,
+   dates → timestamp ou année-mois, agrégation des modalités rares, winsorisation ou log(MTREV+1).
+
+10) Outliers (règle IQR 1.5) : indicatif seulement ; pour comptages à masse en 0 (NBENF) ou
+    variables à queue lourde (MTREV), le pourcentage d'« outliers » peut être artificiellement élevé.
+
+Fichiers CSV détaillés : manquants_*.csv, outliers_iqr_*.csv, sentinelles_table2.json

@@ -1,0 +1,39 @@
+{
+  "n_table1": 30332,
+  "n_table2": 15022,
+  "n_union": 45354,
+  "colonnes_communes": [
+    "CDCATCL",
+    "CDMOTDEM",
+    "CDSEXE",
+    "CDSITFAM",
+    "CDTMT",
+    "DTADH",
+    "DTDEM",
+    "ID",
+    "MTREV",
+    "NBENF"
+  ],
+  "n_colonnes_communes": 10,
+  "colonnes_solo_table1": [
+    "ADH",
+    "AGEAD",
+    "AGEDEM",
+    "ANNEEDEM",
+    "CDDEM",
+    "RANGADH",
+    "RANGAGEAD",
+    "RANGAGEDEM",
+    "RANGDEM"
+  ],
+  "colonnes_solo_table2": [
+    "BPADH",
+    "DTNAIS"
+  ],
+  "table2_taux_demission": 0.03647982958327786,
+  "table2_n_demission": 548,
+  "table2_n_non_dem": 14474,
+  "union_n_label_1": 30880,
+  "union_n_label_0": 14474,
+  "note": "Sans test de comparaison de distributions, les écarts descriptifs restent indicatifs. Table1 = uniquement démissionnaires."
+}

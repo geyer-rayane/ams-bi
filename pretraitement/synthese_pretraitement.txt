@@ -1,0 +1,10 @@
+=== Prétraitement ===
+Entrée : table2_matrice_modele.csv
+Lignes=15022, features=33
+PCA 95% variance -> 9 composantes
+PCA 10 composantes (fixe)
+SelectKBest -> 10 variables
+
+Fichiers : matrice_pca_95var.csv, matrice_pca_10composantes.csv,
+pca_variance_expliquee.csv, pca_loadings_95var.csv,
+matrice_selectkbest_f10.csv, selectkbest_scores.csv, schema_pretraitement.json

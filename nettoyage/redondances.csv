@@ -1,0 +1,6 @@
+﻿paire_ou_fait,recommandation
+AGEAD vs RANGAGEAD,"forte dépendance (tranches dérivées de l'âge) ; garder l'âge numérique ou les tranches, pas les deux sans régularisation."
+AGEDEM vs RANGAGEDEM,idem.
+ADH vs RANGADH,idem ; RANGADH a des manquants en table1.
+ANNEEDEM vs DTDEM / RANGDEM,information temporelle dupliquée sous plusieurs formats.
+table1 uniquement démissionnaires,population différente de table2 ; ne pas fusionner naïvement pour un score sur sociétaires actuels.

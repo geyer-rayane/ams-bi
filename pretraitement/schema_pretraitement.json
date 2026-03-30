@@ -1,0 +1,18 @@
+{
+  "entree": "recodage\\table2_matrice_modele.csv",
+  "n_lignes": 15022,
+  "n_features_init": 33,
+  "pca_95pct": {
+    "n_composantes": 9,
+    "variance_totale_expliquee": 0.9521567398447429
+  },
+  "pca_10composantes": {
+    "n_composantes": 10,
+    "variance_totale_expliquee": 0.9659919712061997
+  },
+  "selectkbest": {
+    "k": 10,
+    "methode": "f_classif (ANOVA F entre classes)"
+  },
+  "interpretation": "PCA = axes orthogonaux, combinaisons linéaires des variables ; interprétation métier souvent plus difficile qu'avec variables brutes. SelectKBest conserve des noms de variables explicites."
+}

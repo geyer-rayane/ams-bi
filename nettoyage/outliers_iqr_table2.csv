@@ -1,0 +1,7 @@
+﻿table,colonne,n,outliers_iqr_1_5,pct_outliers,min,max
+table2,CDSEXE,15022,0,0.0,1.0,4.0
+table2,MTREV,15022,297,1.9771,0.0,38413.0
+table2,NBENF,15022,3733,24.8502,0.0,13.0
+table2,CDTMT,15022,16,0.1065,0.0,6.0
+table2,CDCATCL,15022,164,1.0917,10.0,98.0
+table2,BPADH,15022,3696,24.6039,0.0,88887.0
