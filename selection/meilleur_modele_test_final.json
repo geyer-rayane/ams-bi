@@ -1,0 +1,33 @@
+{
+  "cible": "cible_churn",
+  "feature_mode": "z",
+  "algorithme": "rf",
+  "hyperparams": {
+    "n_estimators": 100,
+    "max_depth": 10,
+    "max_features": "sqrt",
+    "min_samples_leaf": 5
+  },
+  "selection_sur": {
+    "jeu": "validation",
+    "critere": "roc_auc",
+    "meilleure_valeurs": {
+      "accuracy": 0.9980033277870216,
+      "roc_auc": 0.9999403360025123,
+      "f1": 0.9719626168224299,
+      "precision": 1.0,
+      "recall": 0.9454545454545454
+    }
+  },
+  "evaluation_finale_sur": {
+    "jeu": "test",
+    "mesures": {
+      "accuracy": 0.9960066555740432,
+      "roc_auc": 0.9998115873763542,
+      "f1": 0.9433962264150944,
+      "precision": 0.9803921568627451,
+      "recall": 0.9090909090909091
+    }
+  },
+  "random_state": 42
+}

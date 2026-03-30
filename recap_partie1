@@ -21,3 +21,58 @@ Exemples : stratification sur cible_churn, 60 % / 20 % / 20 % → 9 012 / 3 
 7. Rapport (latex/rapport.tex → rapport.pdf)
 But : documenter chaque étape (exploration → découpage), figures sous latex/img/, texte en français.
 En une phrase : on a exploré et nettoyé les données, fusionné les deux tables pour analyse, recodé une matrice modèle sur table2, prétraité (PCA / sélection), puis découpé train/val/test pour la suite (modèles de classification).
+
+
+
+
+Intervalle / ratio
+continu, zéro absolu
+Les écarts entre valeurs ont un sens.
+L'addition et la soustraction sont valides.
+Pour "ratio" : le rapport aussi (0 absolu).
+MTREV (revenu), NBENF,
+AGEAD, AGEDEM, ADH
+Ordinal
+codes rangés, écarts flous
+Les modalités ont un ordre logique,
+mais l'écart entre deux rangs
+n'est pas interprétable chiffre à chiffre.
+RANGAGEAD, RANGAGEDEM,
+RANGADH, RANGDEM, ANNEEDEM
+Nominal
+catégories sans ordre
+Les modalités sont des étiquettes pures.
+Aucune comparaison numérique valide.
+Exige un encodage (one-hot, cible…).
+CDSEXE, CDSITFAM, CDTMT,
+CDCATCL, CDDEM, CDMOTDEM
+Date brute
+chaîne à parser
+Stockée en texte, illisible tel quel.
+Il faut la convertir en timestamp,
+puis calculer un écart (ancienneté, âge).
+DTNAIS, DTADH, DTDEM
+(sauf quand sentinelle)
+Identifiant
+Clé technique opaque. Aucune information
+prédictive, à exclure de la matrice X.
+ID
+Dérivé / redondant
+information dupliquée
+Variable calculée à partir d'une autre.
+Garder les deux risque la multicolinéarité
+et gonfle la dimension sans apport réel.
+Toutes les variables RANG* quand
+leur pendant numérique est conservé
+(AGEAD, ADH, ANNEEDEM)
+Inconnu
+Définition métier absente. Inclure dans
+un modèle sans comprendre est risqué.
+BPADH
+Date ou sentinelle
+valeur codée spéciale
+Même colonne, deux interprétations :
+vraie date si démission réelle,
+code "non-démissionnaire" sinon.
+DTDEM dans table2
+(31/12/1900 = pas de démission
