@@ -8,6 +8,9 @@ Implémentation principale :
   - identifiants uniques régénérés pour éviter les collisions d'ID entre fichiers ;
   - export d'un extrait dans concatenation/ pour contrôle (pas d'export massif du jeu complet).
 
+union_complete() : union sur TOUTES les colonnes (NaN pour absentes) — conserve DTNAIS
+  (table2) et AGEAD/AGEDEM/ADH (table1) pour enrichissement de recodage.py.
+
 Descriptifs optionnels : moyennes / médianes par table sur les numériques communes
 (sans test d'hypothèse — simple lecture exploratoire).
 
@@ -62,17 +65,41 @@ def union_verticale(t1: pd.DataFrame, t2: pd.DataFrame) -> pd.DataFrame:
 
 
 def union_avec_labels_churn(t1: pd.DataFrame, t2: pd.DataFrame) -> pd.DataFrame:
-    """Union + label explicite (diagnostic du déséquilibre si fusion pour apprentissage naïf)."""
+    """Union sur colonnes communes + label cible (diagnostic du déséquilibre)."""
     u = union_verticale(t1, t2)
-    labels = []
-    for _, row in u.iterrows():
-        if row["source"] == "table2":
-            d = str(row["DTDEM"]).strip()
-            labels.append(1 if d != SENTINELLE_NON_DEM else 0)
-        else:
-            labels.append(1)
-    u["label_churn_obs"] = labels
+    masque_t2 = u["source"] == "table2"
+    d_t2 = u.loc[masque_t2, "DTDEM"].astype(str).str.strip()
+    u["label_churn_obs"] = 1
+    u.loc[masque_t2, "label_churn_obs"] = (d_t2 != SENTINELLE_NON_DEM).astype(int).values
     return u
+
+
+def union_complete(t1: pd.DataFrame, t2: pd.DataFrame) -> pd.DataFrame:
+    """
+    Concaténation verticale sur TOUTES les colonnes (NaN pour colonnes absentes).
+
+    Conserve :
+      - DTNAIS (table2 uniquement) pour calcul d'âge côté table2 ;
+      - AGEAD, AGEDEM, ADH (table1 uniquement) pour estimation d'âge côté table1 ;
+      - CDMOTDEM, ANNEEDEM (table1) enrichissant les churners.
+
+    Les IDs d'origine sont dans id_fichier ; ID = identifiant global unique.
+    La colonne cible_churn est posée ici :
+      1 = table1 (tous démissionnaires) ou table2 avec DTDEM réelle ;
+      0 = table2 avec DTDEM = sentinelle non-démission.
+    """
+    a = t1.copy()
+    b = t2.copy()
+    a["source"] = "table1"
+    b["source"] = "table2"
+    a["id_fichier"] = a["ID"]
+    b["id_fichier"] = b["ID"]
+    a["ID"] = range(1, len(a) + 1)
+    b["ID"] = range(len(a) + 1, len(a) + len(b) + 1)
+    a["cible_churn"] = 1
+    d2 = b["DTDEM"].astype(str).str.strip()
+    b["cible_churn"] = (d2 != SENTINELLE_NON_DEM).astype(int)
+    return pd.concat([a, b], axis=0, ignore_index=True)
 
 
 def descriptifs_numeriques_sans_test(
@@ -101,22 +128,32 @@ def descriptifs_numeriques_sans_test(
     return pd.DataFrame(rows)
 
 
-def resume_strategies(t1: pd.DataFrame, t2: pd.DataFrame, u: pd.DataFrame, uc: pd.DataFrame) -> dict:
+def resume_strategies(
+    t1: pd.DataFrame, t2: pd.DataFrame, u: pd.DataFrame, uc: pd.DataFrame, uf: pd.DataFrame
+) -> dict:
     y2 = cible_table2(t2)
     return {
         "n_table1": len(t1),
         "n_table2": len(t2),
-        "n_union": len(u),
+        "n_union_communes": len(u),
+        "n_union_complete": len(uf),
         "colonnes_communes": colonnes_communes(t1, t2),
         "n_colonnes_communes": len(colonnes_communes(t1, t2)),
         "colonnes_solo_table1": sorted(set(t1.columns) - set(t2.columns)),
         "colonnes_solo_table2": sorted(set(t2.columns) - set(t1.columns)),
+        "n_colonnes_union_complete": int(uf.shape[1]),
         "table2_taux_demission": float(y2.mean()),
         "table2_n_demission": int(y2.sum()),
         "table2_n_non_dem": int((y2 == 0).sum()),
-        "union_n_label_1": int((uc["label_churn_obs"] == 1).sum()),
-        "union_n_label_0": int((uc["label_churn_obs"] == 0).sum()),
-        "note": "Sans test de comparaison de distributions, les écarts descriptifs restent indicatifs. Table1 = uniquement démissionnaires.",
+        "union_communes_n_label_1": int((uc["label_churn_obs"] == 1).sum()),
+        "union_communes_n_label_0": int((uc["label_churn_obs"] == 0).sum()),
+        "union_complete_n_churn_1": int((uf["cible_churn"] == 1).sum()),
+        "union_complete_n_churn_0": int((uf["cible_churn"] == 0).sum()),
+        "union_complete_taux_churn": float(uf["cible_churn"].mean()),
+        "note": (
+            "union_complete.csv conserve toutes les colonnes des deux tables (NaN pour absentes). "
+            "Utilisée par recodage.py comme base du pipeline ML."
+        ),
     }
 
 
@@ -127,35 +164,41 @@ def main() -> None:
 
     u = union_verticale(t1, t2)
     uc = union_avec_labels_churn(t1, t2)
+    uf = union_complete(t1, t2)
 
     num_communes = [c for c in communes if c != "ID" and pd.api.types.is_numeric_dtype(t1[c])]
     desc = descriptifs_numeriques_sans_test(t1, t2, num_communes)
     desc.to_csv(SORTIE / "descriptifs_variables_communes.csv", index=False, encoding="utf-8-sig")
 
-    res = resume_strategies(t1, t2, u, uc)
+    res = resume_strategies(t1, t2, u, uc, uf)
     (SORTIE / "resume_strategies.json").write_text(json.dumps(res, indent=2, ensure_ascii=False), encoding="utf-8")
 
     u.head(500).to_csv(SORTIE / "echantillon_union_500lignes.csv", index=False, encoding="utf-8-sig")
+
+    # Export complet pour recodage.py (pipeline ML)
+    uf.to_csv(SORTIE / "union_complete.csv", index=False, encoding="utf-8-sig")
 
     lignes = [
         "=== Concaténation : synthèse ===",
         f"Colonnes communes ({len(communes)}) : {', '.join(communes)}",
         f"Lignes table1={len(t1)}, table2={len(t2)}, union={len(u)}",
         f"Table2 taux démission (DTDEM != {SENTINELLE_NON_DEM}) : {res['table2_taux_demission']:.4f}",
+        f"Union complète : {len(uf)} lignes, {uf.shape[1]} colonnes — churn=1 : {res['union_complete_n_churn_1']}, churn=0 : {res['union_complete_n_churn_0']}",
         "",
         "Fichiers : resume_strategies.json, echantillon_union_500lignes.csv,",
-        "descriptifs_variables_communes.csv (moyennes/médianes, sans test statistique).",
+        "descriptifs_variables_communes.csv (moyennes/médianes, sans test statistique),",
+        "union_complete.csv (toutes colonnes, utilisée par recodage.py).",
         "",
         "Les IDs d'origine sont dans id_fichier ; ID = identifiant unique dans l'union.",
     ]
     (SORTIE / "synthese_concatenation.txt").write_text("\n".join(lignes), encoding="utf-8")
 
-    # Ancien fichier au nom trompeur : supprimer s'il existe pour éviter confusion
     ancien = SORTIE / "comparaison_distributions_numeriques.csv"
     if ancien.exists():
         ancien.unlink()
 
     print("OK — sorties dans", SORTIE)
+    print(f"  union_complete.csv : {len(uf)} lignes, {uf.shape[1]} colonnes")
 
 
 if __name__ == "__main__":

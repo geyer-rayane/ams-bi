@@ -2,12 +2,13 @@
 """
 Prétraitement : réduction de dimension et sélection de variables (avant modèles de fouille).
 
-Entrée : matrice issue de recodage/table2_matrice_modele.csv (sans re-lancer recodage.py ici).
+Entrée : recodage/union_matrice_modele.csv (union table1+table2, mode principal).
+Fallback : recodage/table2_matrice_modele.csv si l'union n'existe pas.
 
 Méthodes :
-  - ACP / PCA : réduction de dimension, variance expliquée (accélère parfois l'entraînement) ;
-    les composantes sont des combinaisons linéaires → interprétabilité des variables initiales réduite.
-  - SelectKBest (ANOVA F) : garde k variables les plus liées à la cible (lisibilité des noms conservés).
+  - ACP / PCA : réduction de dimension, variance expliquée ;
+    les composantes sont des combinaisons linéaires → interprétabilité réduite.
+  - SelectKBest (ANOVA F) : garde k variables les plus liées à la cible (noms préservés).
 
 Sorties : dossier pretraitement/
 """
@@ -23,26 +24,30 @@ from sklearn.decomposition import PCA
 from sklearn.feature_selection import SelectKBest, f_classif
 
 RACINE = Path(__file__).resolve().parent
-MATRICE = RACINE / "recodage" / "table2_matrice_modele.csv"
+_MATRICE_UNION = RACINE / "recodage" / "union_matrice_modele.csv"
+_MATRICE_T2 = RACINE / "recodage" / "table2_matrice_modele.csv"
+MATRICE = _MATRICE_UNION if _MATRICE_UNION.exists() else _MATRICE_T2
 SORTIE = RACINE / "pretraitement"
 
 
-def charger_matrice() -> tuple[pd.DataFrame, pd.Series, pd.Series]:
-    df = pd.read_csv(MATRICE, low_memory=False)
+def charger_matrice(chemin: Path) -> tuple[pd.DataFrame, pd.Series, pd.Series]:
+    df = pd.read_csv(chemin, low_memory=False)
     y = df["cible_churn"]
     ids = df["ID"]
-    X = df.drop(columns=["ID", "cible_churn"])
+    cols_meta = [c for c in ("ID", "cible_churn", "source", "id_fichier") if c in df.columns]
+    X = df.drop(columns=cols_meta)
     return X, y, ids
 
 
 def main() -> None:
     SORTIE.mkdir(parents=True, exist_ok=True)
-    if not MATRICE.exists():
+    matrice = _MATRICE_UNION if _MATRICE_UNION.exists() else _MATRICE_T2
+    if not matrice.exists():
         raise FileNotFoundError(
-            f"Matrice absente : {MATRICE}. Exécuter d'abord recodage.py."
+            "Matrice absente. Exécuter d'abord concatenation.py puis recodage.py."
         )
 
-    X, y, ids = charger_matrice()
+    X, y, ids = charger_matrice(matrice)
 
     # --- PCA : variance cumulée 95 % ---
     pca_95 = PCA(n_components=0.95, random_state=42)
@@ -99,7 +104,7 @@ def main() -> None:
     scores.to_csv(SORTIE / "selectkbest_scores.csv", index=False, encoding="utf-8-sig")
 
     schema = {
-        "entree": str(MATRICE.relative_to(RACINE)),
+        "entree": str(matrice.relative_to(RACINE)),
         "n_lignes": int(len(X)),
         "n_features_init": int(X.shape[1]),
         "pca_95pct": {
@@ -121,7 +126,7 @@ def main() -> None:
 
     txt = [
         "=== Prétraitement ===",
-        f"Entrée : {MATRICE.name}",
+        f"Entrée : {matrice.name}",
         f"Lignes={len(X)}, features={X.shape[1]}",
         f"PCA 95% variance -> {n95} composantes",
         f"PCA {k_fix} composantes (fixe)",
