@@ -1,6 +1,6 @@
 {
   "algorithme": "logreg",
-  "label": "Régression logistique",
+  "label": "Regression logistique",
   "mode": "z",
   "params": {
     "C": 10.0,

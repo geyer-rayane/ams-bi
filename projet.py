@@ -21,13 +21,16 @@ RACINE = Path(__file__).resolve().parent
 PIPELINE = [
     ("Exploration", "exploration.py", []),
     ("Nettoyage", "nettoyage.py", []),
-    ("Concaténation", "concatenation.py", []),
+    ("Concatenation", "concatenation.py", []),
     ("Recodage", "recodage.py", []),
-    ("Prétraitement", "pretraitement.py", []),
-    ("Découpage", "decoupage.py", []),
-    ("Sélection", "selection.py", []),
+    ("Pretraitement", "pretraitement.py", []),
+    ("Decoupage", "decoupage.py", []),
+    ("Selection", "selection.py", []),
+    ("Apprentissage", "apprentissage.py", []),
+    ("Raffinage", "raffinage.py", []),
     ("Comparaison", "comparaison.py", []),
-    ("Évaluation finale", "evaluation.py", []),
+    ("Evaluation", "evaluation.py", []),
+    ("Interpretation", "interpretation.py", []),
 ]
 
 
@@ -70,11 +73,11 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    # Injecter options uniquement pour selection.py
+    # Injecter options quick/smote pour apprentissage et raffinage
     ordered = []
     for label, script, extra in PIPELINE:
         step_args = list(extra)
-        if script == "selection.py":
+        if script in {"apprentissage.py", "raffinage.py"}:
             if args.quick:
                 step_args.append("--quick")
             if args.smote:

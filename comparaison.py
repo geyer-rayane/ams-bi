@@ -1,21 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Comparaison des modèles sur le jeu de validation.
-
-Charge les sorties de selection.py :
-  - selection/resultats_validation.csv  -> métriques par algorithme
-  - selection/predictions_validation.csv -> prédictions binaires par algorithme
-
-Analyses :
-  1. Tableau de métriques trié par ROC AUC.
-  2. Test de McNemar (significativité statistique entre paires de modèles).
-     H0 : les deux classifieurs font le même nombre d'erreurs.
-     p < 0.05 -> différence significative.
-  3. Matrice de p-valeurs entre toutes les paires d'algorithmes.
-
-Aucune sortie fichier - résultats uniquement en terminal.
--> Pour l'évaluation finale sur test : evaluation.py
-"""
+"""Etape Comparaison sur validation + explication detaillee de McNemar."""
 
 from __future__ import annotations
 
@@ -43,8 +27,8 @@ def mcnemar_pvalue(pred_a: np.ndarray, pred_b: np.ndarray, y_true: np.ndarray) -
 
 
 def main() -> None:
-    results_path = DIR_SELECTION / "resultats_validation.csv"
-    preds_path = DIR_SELECTION / "predictions_validation.csv"
+    results_path = DIR_SELECTION / "raffinage_resultats_validation.csv"
+    preds_path = DIR_SELECTION / "raffinage_predictions_validation.csv"
 
     if not results_path.exists() or not preds_path.exists():
         raise FileNotFoundError("Exécuter d'abord selection.py.")
@@ -64,10 +48,19 @@ def main() -> None:
 
     # --- Test de McNemar ---
     print("\n" + "=" * 80)
-    print("TEST DE McNEMAR (p-valeurs) - * = différence significative (p < 0.05)")
+    print("TEST DE McNEMAR - comparaison par paires de modeles")
     print("=" * 80)
+    print("Comment la comparaison est faite:")
+    print("- On compare 2 modeles A et B sur EXACTEMENT les memes lignes de validation.")
+    print("- n01 = nb lignes ou A est faux et B est juste.")
+    print("- n10 = nb lignes ou A est juste et B est faux.")
+    print("- Si n01 et n10 sont proches: performances comparables.")
+    print("- Si n01 et n10 sont tres differents: un modele domine l'autre.")
+    print("- H0: n01 == n10 (pas de difference significative).")
+    print("- p < 0.05 => difference statistiquement significative.")
+    print("")
 
-    w = 10
+    w = 12
     header = f"{'':>{w}}" + "".join(f"{k:>{w}}" for k in algo_keys)
     print(header)
 
@@ -84,13 +77,24 @@ def main() -> None:
                 row_str += f"{p:.3f}{marker:>{w - 5}}"
         print(row_str)
 
-    print("\n* p < 0.05 -> les deux modèles diffèrent significativement")
+    print("\nDETAIL PAR PAIRE (n01, n10, p-value):")
+    for i, k1 in enumerate(algo_keys):
+        pred1 = df_preds[f"pred_{k1}"].values
+        for k2 in algo_keys[i + 1:]:
+            pred2 = df_preds[f"pred_{k2}"].values
+            correct_1 = pred1 == y_true
+            correct_2 = pred2 == y_true
+            n01 = int((~correct_1 & correct_2).sum())
+            n10 = int((correct_1 & ~correct_2).sum())
+            p = mcnemar_pvalue(pred1, pred2, y_true)
+            verdict = "SIGNIFICATIF" if p < 0.05 else "non significatif"
+            print(f"- {k1} vs {k2}: n01={n01}, n10={n10}, p={p:.4f} -> {verdict}")
 
     # --- Recommandation ---
     best_row = df_res.sort_values("val_roc_auc", ascending=False).iloc[0]
     print(f"\nMeilleur modèle (AUC validation) : {best_row.get('label', best_row.get('key', '?'))} "
           f"- AUC={best_row['val_roc_auc']:.4f}  F1={best_row['val_f1']:.4f}")
-    print("-> Lancer evaluation.py pour l'evaluation finale sur le jeu de test.")
+    print("-> Lancer evaluation.py pour l'evaluation finale sur test.")
 
 
 if __name__ == "__main__":

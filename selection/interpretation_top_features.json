@@ -1,0 +1,82 @@
+{
+  "best_model": "logreg",
+  "label": "Regression logistique",
+  "mode": "z",
+  "top_features": [
+    {
+      "rank": 1,
+      "feature": "mot___MANQUANT__",
+      "value": -15.179330274990628
+    },
+    {
+      "rank": 2,
+      "feature": "mot_DV",
+      "value": 8.970571980240624
+    },
+    {
+      "rank": 3,
+      "feature": "mot_DA",
+      "value": 8.420780690770139
+    },
+    {
+      "rank": 4,
+      "feature": "mot_DC",
+      "value": -6.690476047822856
+    },
+    {
+      "rank": 5,
+      "feature": "mot_RA",
+      "value": 6.470415450604648
+    },
+    {
+      "rank": 6,
+      "feature": "sit_A",
+      "value": 1.8624923925795442
+    },
+    {
+      "rank": 7,
+      "feature": "z_BPADH",
+      "value": -1.4701812307320377
+    },
+    {
+      "rank": 8,
+      "feature": "z_CDTMT",
+      "value": 1.0494204740203292
+    },
+    {
+      "rank": 9,
+      "feature": "sit_D",
+      "value": 0.8054300796582602
+    },
+    {
+      "rank": 10,
+      "feature": "sit_M",
+      "value": -0.6748558180894657
+    },
+    {
+      "rank": 11,
+      "feature": "z_CDCATCL",
+      "value": -0.6564142570553798
+    },
+    {
+      "rank": 12,
+      "feature": "z_MTREV",
+      "value": -0.21674311394220624
+    },
+    {
+      "rank": 13,
+      "feature": "z_age_ref",
+      "value": 0.21511825749162916
+    },
+    {
+      "rank": 14,
+      "feature": "sit_U",
+      "value": 0.21347479735886557
+    },
+    {
+      "rank": 15,
+      "feature": "sit_V",
+      "value": -0.16265303844136916
+    }
+  ]
+}

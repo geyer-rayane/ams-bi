@@ -1,21 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Évaluation finale sur le jeu de test.
-
-Charge la configuration du meilleur modèle depuis selection/meilleurs_par_algo.json,
-ré-entraîne sur train + validation combinés, puis évalue sur test.
-
-Usage :
-  python evaluation.py               # utilise _best_overall
-  python evaluation.py --algo rf     # spécifie l'algorithme (key de CATALOG)
-
-Interprétation :
-  - Arbre / Forêt : importances de features (top 15).
-  - Régression logistique : coefficients (top 15 en valeur absolue).
-  - Autres : aucune (boîte noire).
-
--> Cette étape ne doit être exécutée QU'UNE SEULE FOIS sur le modèle définitif.
-"""
+"""Etape Evaluation finale sur jeu de test (apres raffinage)."""
 
 from __future__ import annotations
 
@@ -25,19 +9,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import (
-    ConfusionMatrixDisplay,
-    accuracy_score,
-    classification_report,
-    confusion_matrix,
-    f1_score,
-    precision_score,
-    recall_score,
-    roc_auc_score,
-)
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score, precision_score, recall_score, roc_auc_score
 
-# Réutilise CATALOG et les helpers de selection.py
-from selection import CATALOG, build_model, extraire_X_y
+from raffinage import build_model, extraire_X_y
 
 RACINE = Path(__file__).resolve().parent
 DIR_SPLIT = RACINE / "decoupage"
@@ -50,7 +24,7 @@ def main() -> None:
     parser.add_argument("--algo", default="best", help="Clé algo (ex. rf) ou 'best' pour auto.")
     args = parser.parse_args()
 
-    config_path = DIR_SELECTION / "meilleurs_par_algo.json"
+    config_path = DIR_SELECTION / "raffinage_meilleurs_modeles.json"
     if not config_path.exists():
         raise FileNotFoundError("Exécuter d'abord selection.py.")
 
@@ -59,7 +33,7 @@ def main() -> None:
 
     algo_key = configs["_best_overall"] if args.algo == "best" else args.algo
     if algo_key not in configs:
-        raise ValueError(f"Clé '{algo_key}' absente de meilleurs_par_algo.json.")
+        raise ValueError(f"Cle '{algo_key}' absente de raffinage_meilleurs_modeles.json.")
 
     best = configs[algo_key]
     mode = best["mode"]
@@ -75,11 +49,7 @@ def main() -> None:
     X_test, y_test = extraire_X_y(test_df,     mode)
 
     # --- Ré-entraînement sur train + val ---
-    algo_cfg = next((c for c in CATALOG if c["key"] == algo_key), None)
-    if algo_cfg is None:
-        raise ValueError(f"Algorithme '{algo_key}' non trouvé dans CATALOG.")
-
-    model = build_model(algo_cfg, best["params"])
+    model = build_model(algo_key, best["params"])
     model.fit(X_tv, y_tv)
 
     # --- Évaluation sur test ---
@@ -113,52 +83,6 @@ def main() -> None:
     print(f"  VN={cm[0,0]:5d}  FP={cm[0,1]:5d}")
     print(f"  FN={cm[1,0]:5d}  VP={cm[1,1]:5d}")
 
-    # --- Interprétation ---
-    print("\n" + "=" * 60)
-    print("INTERPRÉTATION DU MODÈLE")
-    print("=" * 60)
-
-    # Récupère le modèle sous-jacent (si CalibratedClassifierCV)
-    base = model
-    if hasattr(model, "estimator"):
-        base = model.estimator  # CalibratedClassifierCV
-
-    feature_names = list(X_tv.columns)
-
-    if hasattr(base, "feature_importances_"):
-        importances = base.feature_importances_
-        idx = np.argsort(importances)[::-1][:15]
-        print("Importances de features (top 15) :")
-        for rank, i in enumerate(idx, 1):
-            print(f"  {rank:2d}. {feature_names[i]:<35} {importances[i]:.4f}")
-
-    elif hasattr(base, "coef_"):
-        coefs = base.coef_.ravel() if base.coef_.ndim > 1 else base.coef_
-        idx = np.argsort(np.abs(coefs))[::-1][:15]
-        print("Coefficients (top 15 en valeur absolue) :")
-        for rank, i in enumerate(idx, 1):
-            print(f"  {rank:2d}. {feature_names[i]:<35} {coefs[i]:+.4f}")
-
-    elif hasattr(model, "calibrated_classifiers_"):
-        # CalibratedClassifierCV - moyenne des estimateurs calibrés
-        all_coefs = []
-        for cc in model.calibrated_classifiers_:
-            inner = cc.estimator
-            if hasattr(inner, "coef_"):
-                all_coefs.append(inner.coef_.ravel())
-            elif hasattr(inner, "feature_importances_"):
-                all_coefs.append(inner.feature_importances_)
-        if all_coefs:
-            avg = np.mean(all_coefs, axis=0)
-            idx = np.argsort(np.abs(avg))[::-1][:15]
-            print("Importance moyenne des features (calibré, top 15) :")
-            for rank, i in enumerate(idx, 1):
-                print(f"  {rank:2d}. {feature_names[i]:<35} {avg[i]:+.4f}")
-        else:
-            print("Interprétation non disponible pour cet algorithme.")
-    else:
-        print("Interprétation non disponible pour cet algorithme.")
-
     # --- Sauvegarde résultat test ---
     schema_test = {
         "algorithme": algo_key,
@@ -171,7 +95,8 @@ def main() -> None:
     (DIR_SELECTION / "evaluation_test_finale.json").write_text(
         json.dumps(schema_test, indent=2, ensure_ascii=False), encoding="utf-8"
     )
-    print(f"\nResultats sauvegardes -> selection/evaluation_test_finale.json")
+    print("- Resultats sauvegardes -> selection/evaluation_test_finale.json")
+    print("- Etape suivante -> interpretation.py")
 
 
 if __name__ == "__main__":
