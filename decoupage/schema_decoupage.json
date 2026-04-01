@@ -1,35 +1,44 @@
 {
-  "fichier_source": "recodage\\table2_matrice_modele.csv",
-  "n_total": 15022,
-  "proportion_test": 0.2,
-  "proportion_validation_sur_restre": 0.25,
-  "proportion_apprentissage_effectif": 0.5999,
-  "splits": [
+  "fichier_source": "recodage\\union_matrice_modele.csv",
+  "n_total": 45354,
+  "proportion_test": 0.15,
+  "proportion_validation_sur_reste": 0.17647058823529413,
+  "splits_originaux": [
     {
       "nom": "apprentissage",
-      "n": 9012,
-      "pct_total": 59.99,
-      "n_churn_1": 328,
-      "n_churn_0": 8684,
-      "taux_churn": 0.036396
+      "n": 31747,
+      "pct_total": 70.0,
+      "n_churn_1": 21615,
+      "n_churn_0": 10132,
+      "taux_churn": 0.680852
     },
     {
       "nom": "validation",
-      "n": 3005,
-      "pct_total": 20.0,
-      "n_churn_1": 110,
-      "n_churn_0": 2895,
-      "taux_churn": 0.036606
+      "n": 6803,
+      "pct_total": 15.0,
+      "n_churn_1": 4632,
+      "n_churn_0": 2171,
+      "taux_churn": 0.680876
     },
     {
       "nom": "test",
-      "n": 3005,
-      "pct_total": 20.0,
-      "n_churn_1": 110,
-      "n_churn_0": 2895,
-      "taux_churn": 0.036606
+      "n": 6804,
+      "pct_total": 15.0,
+      "n_churn_1": 4633,
+      "n_churn_0": 2171,
+      "taux_churn": 0.680923
     }
   ],
+  "smote": {
+    "applique_sur": "jeu_apprentissage uniquement",
+    "n_avant": 31747,
+    "n_apres": 43230,
+    "n_churn_1_avant": 21615,
+    "n_churn_1_apres": 21615,
+    "n_churn_0_apres": 21615,
+    "taux_churn_apres": 0.5,
+    "note": "Validation et test conservent la distribution réelle (déséquilibrée). SMOTE génère des exemples synthétiques de la classe minoritaire (churners) par interpolation dans l'espace des features. Utiliser jeu_apprentissage_smote.csv pour les classifieurs sensibles au déséquilibre ; jeu_apprentissage.csv pour les arbres ou classifieurs avec class_weight."
+  },
   "stratification": "cible_churn",
   "random_state": 42
 }

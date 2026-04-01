@@ -5,7 +5,7 @@ Découpage train / validation / test + rééquilibrage des classes sur le jeu d'
 Entrée : recodage/union_matrice_modele.csv (mode principal, table1+table2).
 Fallback : recodage/table2_matrice_modele.csv.
 
-Répartition : 60 % / 20 % / 20 % stratifiée sur cible_churn.
+Répartition : 70 % / 15 % / 15 % stratifiée sur cible_churn.
 
 Rééquilibrage :
   SMOTE (Synthetic Minority Over-sampling Technique) appliqué UNIQUEMENT sur le jeu
@@ -32,8 +32,8 @@ RACINE = Path(__file__).resolve().parent
 _MATRICE_UNION = RACINE / "recodage" / "union_matrice_modele.csv"
 _MATRICE_T2 = RACINE / "recodage" / "table2_matrice_modele.csv"
 
-TEST_SIZE = 0.20
-VAL_SIZE_DANS_RESTE = 0.25  # 0.25 * 0.8 = 0.2 du total
+TEST_SIZE = 0.15
+VAL_SIZE_DANS_RESTE = 0.15 / (1 - 0.15)  # ≈ 0.1765 → 15 % du total
 SORTIE = RACINE / "decoupage"
 
 COLS_META = ("ID", "cible_churn", "source", "id_fichier")

@@ -1,0 +1,17 @@
+{
+  "algorithme": "logreg",
+  "label": "Régression logistique",
+  "mode": "z",
+  "params": {
+    "C": 10.0,
+    "class_weight": null
+  },
+  "val_roc_auc": 0.9999986078063084,
+  "test": {
+    "roc_auc": 0.9997749109859445,
+    "f1": 0.9989203195854027,
+    "accuracy": 0.9985302763080541,
+    "precision": 0.9993519118600129,
+    "recall": 0.9984890999352471
+  }
+}

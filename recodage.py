@@ -25,7 +25,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.preprocessing import StandardScaler
 
 RACINE = Path(__file__).resolve().parent
 DATA = RACINE / "data"
@@ -141,35 +141,55 @@ def preparer_features_union(df: pd.DataFrame) -> pd.DataFrame:
 def matrice_numerique_normalisee(
     df: pd.DataFrame, cols_num: list[str] | None = None
 ) -> tuple[pd.DataFrame, dict]:
-    """
-    Colonnes numériques brutes (hors ID, hors cible) + normalisation.
-    Deux variantes : Z-score (StandardScaler) et [0,1] (MinMaxScaler).
-    Imputation médiane sur les NaN avant scaling.
-    """
+    """StandardScaler uniquement (z_*). Imputation médiane avant scaling."""
     if cols_num is None:
         cols_num = [
-            "CDSEXE",
-            "MTREV",
-            "NBENF",
-            "CDTMT",
-            "CDCATCL",
-            "BPADH",
-            "age_ref",
-            "anciennete_adh_ans",
+            "CDSEXE", "MTREV", "NBENF", "CDTMT", "CDCATCL", "BPADH",
+            "age_ref", "anciennete_adh_ans",
         ]
     cols_num = [c for c in cols_num if c in df.columns]
     X = df[cols_num].copy()
-    meta = {"colonnes": cols_num, "n": len(X)}
     for c in cols_num:
-        med = X[c].median()
-        X[c] = X[c].fillna(med)
-
+        X[c] = X[c].fillna(X[c].median())
     z = StandardScaler().fit_transform(X)
-    mm = MinMaxScaler().fit_transform(X)
-
     df_z = pd.DataFrame(z, columns=[f"z_{c}" for c in cols_num], index=df.index)
-    df_mm = pd.DataFrame(mm, columns=[f"mm_{c}" for c in cols_num], index=df.index)
-    return pd.concat([df_z, df_mm], axis=1), meta
+    return df_z, {"colonnes": cols_num, "n": len(X)}
+
+
+def _matrice_categorielle(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Encodage ordinal (entiers >= 0) pour CategoricalNB et BernoulliNB.
+
+    - Variables nominales : factorize → 0, 1, 2, ...
+    - Variables continues : discrétisation en 5 quantiles → 0..4
+    - Variables entières : shift pour min = 0
+    """
+    out = pd.DataFrame(index=df.index)
+
+    for col, prefix in [("CDSITFAM", "cat_sitfam"), ("CDMOTDEM", "cat_motdem")]:
+        if col in df.columns:
+            codes, _ = pd.factorize(df[col].astype(str).fillna("__NAN__"))
+            out[prefix] = codes
+
+    for col, prefix in [
+        ("CDSEXE", "cat_sexe"), ("CDTMT", "cat_tmt"), ("CDCATCL", "cat_catcl"), ("NBENF", "cat_nbenf"),
+    ]:
+        if col in df.columns:
+            s = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
+            out[prefix] = (s - s.min()).values
+
+    for col, prefix in [
+        ("MTREV", "cat_mtrev"), ("age_ref", "cat_age"), ("anciennete_adh_ans", "cat_anc"),
+    ]:
+        if col in df.columns:
+            s = pd.to_numeric(df[col], errors="coerce")
+            s = s.fillna(s.median())
+            try:
+                out[prefix] = pd.qcut(s, q=5, labels=False, duplicates="drop").fillna(0).astype(int)
+            except ValueError:
+                out[prefix] = 0
+
+    return out
 
 
 def matrice_one_hot(df: pd.DataFrame) -> pd.DataFrame:
@@ -184,14 +204,12 @@ def matrice_one_hot(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _construire_matrice(prep: pd.DataFrame, nom: str, sortie: Path) -> pd.DataFrame:
-    """Construit et exporte la matrice modèle (normalisation + one-hot) pour un DataFrame préparé."""
-    num_norm, meta_num = matrice_numerique_normalisee(prep)
+    """Construit et exporte la matrice modèle (z_* + sit_*/mot_* one-hot + cat_*)."""
+    num_norm, _ = matrice_numerique_normalisee(prep)
     dummies = matrice_one_hot(prep)
-    combine = pd.concat([prep[["ID", "cible_churn"]], num_norm, dummies], axis=1)
+    cat = _matrice_categorielle(prep)
+    combine = pd.concat([prep[["ID", "cible_churn"]], num_norm, dummies, cat], axis=1)
     combine.to_csv(sortie / f"{nom}_matrice_modele.csv", index=False, encoding="utf-8-sig")
-    combine.head(300).to_csv(
-        sortie / f"echantillon_{nom}_matrice_300lignes.csv", index=False, encoding="utf-8-sig"
-    )
     return combine
 
 
@@ -246,10 +264,8 @@ def main() -> None:
             "anciennete_adh_ans depuis DTADH",
             "MTREV_discrete quantiles",
         ],
-        "normalisation": {
-            "z_*": "StandardScaler (moyenne 0, écart-type 1)",
-            "mm_*": "MinMaxScaler [0,1]",
-        },
+        "normalisation": "StandardScaler uniquement (z_*)",
+        "categoriel_nb": "cat_* : encodage ordinal pour CategoricalNB / BernoulliNB",
         "categoriel": "one-hot (sit_*, mot_*) ; CDMOTDEM manquant → __MANQUANT__",
         "union": {
             "n_lignes": int(len(combine_union)),
@@ -268,20 +284,13 @@ def main() -> None:
         json.dumps(schema, indent=2, ensure_ascii=False), encoding="utf-8"
     )
 
-    txt = [
-        "=== Recodage ===",
-        f"Union : {len(combine_union)} lignes, {combine_union.shape[1]} colonnes — matrice principale (pipeline ML).",
-        f"Table2 seule : {len(combine_t2)} lignes — conservée pour compatibilité.",
-        "",
-        "Fichiers principaux : union_matrice_modele.csv, union_recodage_brut_derive.csv",
-        "Fichiers table2 : table2_matrice_modele.csv, table2_recodage_brut_derive.csv",
-        "Schéma : schema_recodage.json",
-    ]
-    (SORTIE / "synthese_recodage.txt").write_text("\n".join(txt), encoding="utf-8")
-
-    print("OK —", SORTIE)
-    print(f"  union_matrice_modele.csv  : {len(combine_union)} lignes, {combine_union.shape[1]} cols")
-    print(f"  table2_matrice_modele.csv : {len(combine_t2)} lignes, {combine_t2.shape[1]} cols")
+    z_cols = sum(1 for c in combine_union.columns if c.startswith("z_"))
+    sit_cols = sum(1 for c in combine_union.columns if c.startswith(("sit_", "mot_")))
+    cat_cols = sum(1 for c in combine_union.columns if c.startswith("cat_"))
+    print(f"Recodage OK — union : {len(combine_union)} lignes, {combine_union.shape[1]} colonnes")
+    print(f"  z_* : {z_cols}  |  sit_*/mot_* (one-hot) : {sit_cols}  |  cat_* (NB catégoriel) : {cat_cols}")
+    print(f"  churn=1 : {(combine_union['cible_churn']==1).sum()}  churn=0 : {(combine_union['cible_churn']==0).sum()}")
+    print(f"  table2 seule : {len(combine_t2)} lignes (backward-compat)")
 
 
 if __name__ == "__main__":

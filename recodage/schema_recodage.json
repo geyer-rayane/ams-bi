@@ -1,27 +1,28 @@
 {
   "date_reference_extraction": "2007-01-01",
-  "cible": "cible_churn (1 = démission, DTDEM != 31/12/1900)",
+  "cible": "cible_churn (1 = démission)",
   "sentinelles": {
-    "DTNAIS": "0000-00-00 -> age_2007 NaN puis imputation médiane pour scaler",
-    "DTDEM": "31/12/1900 -> cible 0"
+    "DTNAIS": "0000-00-00 → age_ref NaN puis imputation médiane",
+    "DTDEM": "31/12/1900 → cible 0"
   },
   "derivations": [
-    "age_2007 depuis DTNAIS",
+    "age_ref (DTNAIS pour table2, AGEAD+anciennete pour table1)",
     "anciennete_adh_ans depuis DTADH",
     "MTREV_discrete quantiles"
   ],
-  "normalisation": {
-    "z_*": "StandardScaler (moyenne 0, écart-type 1) sur bloc numérique",
-    "mm_*": "MinMaxScaler [0,1] sur le même bloc"
+  "normalisation": "StandardScaler uniquement (z_*)",
+  "categoriel_nb": "cat_* : encodage ordinal pour CategoricalNB / BernoulliNB",
+  "categoriel": "one-hot (sit_*, mot_*) ; CDMOTDEM manquant → __MANQUANT__",
+  "union": {
+    "n_lignes": 45354,
+    "n_colonnes": 36,
+    "n_churn_1": 30880,
+    "n_churn_0": 14474,
+    "taux_churn": 0.680866
   },
-  "categoriel": "one-hot (sit_*, mot_*) ; CDMOTDEM manquant recodé __MANQUANT__",
-  "algorithmes": {
-    "arbres_SVM_naive_bayes": "souvent mieux avec variables peu transformées ou discrétisées ; normalisation moins critique pour arbres",
-    "regression_logistique_reseaux": "normalisation / one-hot recommandées",
-    "knn": "normalisation indispensable pour distances"
-  },
-  "dimensions": {
+  "table2": {
     "n_lignes": 15022,
-    "n_colonnes": 35
-  }
+    "n_colonnes": 36
+  },
+  "fichier_principal_pipeline": "union_matrice_modele.csv"
 }

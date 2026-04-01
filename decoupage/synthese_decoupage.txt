@@ -1,8 +1,17 @@
 === Découpage train / validation / test ===
-Source : table2_matrice_modele.csv
-Total lignes : 15022
-Apprentissage : 9012 (60.0 %)
-Validation    : 3005 (20.0 %)
-Test          : 3005 (20.0 %)
+Source : union_matrice_modele.csv
+Total lignes : 45354
+Apprentissage : 31747 (70.0 %)  taux churn=0.6809
+Validation    : 6803 (15.0 %)  taux churn=0.6809
+Test          : 6804 (15.0 %)  taux churn=0.6809
 
-Fichiers : jeu_apprentissage.csv, jeu_validation.csv, jeu_test.csv, schema_decoupage.json
+=== SMOTE (rééquilibrage classe minoritaire — train uniquement) ===
+Train avant SMOTE : 31747 lignes  (churn=1 : 21615, churn=0 : 10132)
+Train après SMOTE : 43230 lignes (churn=1 : 21615, churn=0 : 21615)
+
+Fichiers :
+  jeu_apprentissage.csv         (original, déséquilibré)
+  jeu_apprentissage_smote.csv   (rééquilibré par SMOTE)
+  jeu_validation.csv            (distribution réelle)
+  jeu_test.csv                  (distribution réelle)
+  schema_decoupage.json
