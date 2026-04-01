@@ -16,7 +16,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 from sklearn.naive_bayes import CategoricalNB
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 
@@ -39,8 +38,6 @@ def extraire_X_y(df: pd.DataFrame, mode: str) -> tuple[pd.DataFrame, pd.Series]:
 
 
 def build_model(key: str, params: dict[str, Any]):
-    if key == "knn":
-        return KNeighborsClassifier(**params)
     if key == "tree":
         return DecisionTreeClassifier(random_state=RANDOM_STATE, **params)
     if key == "rf":

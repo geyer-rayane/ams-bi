@@ -1,12 +1,4 @@
 {
-  "knn": {
-    "label": "k-NN",
-    "mode": "z",
-    "params": {
-      "n_neighbors": 3,
-      "weights": "uniform"
-    }
-  },
   "tree": {
     "label": "Arbre de decision",
     "mode": "z",

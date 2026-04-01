@@ -1,18 +1,4 @@
 {
-  "knn": {
-    "key": "knn",
-    "label": "k-NN",
-    "mode": "z",
-    "params": {
-      "n_neighbors": 7,
-      "weights": "distance"
-    },
-    "val_roc_auc": 0.9991514082238073,
-    "val_f1": 0.9968712914014457,
-    "val_accuracy": 0.9957371747758342,
-    "val_precision": 0.9963338365322407,
-    "val_recall": 0.9974093264248705
-  },
   "tree": {
     "key": "tree",
     "label": "Arbre de decision",

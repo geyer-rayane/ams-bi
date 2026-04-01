@@ -27,13 +27,6 @@ def main() -> None:
         "target": "cible_churn",
         "algorithmes": [
             {
-                "key": "knn",
-                "label": "k-NN",
-                "mode": "z",
-                "grille": {"n_neighbors": [3, 5, 7, 11], "weights": ["uniform", "distance"]},
-                "grille_quick": {"n_neighbors": [5], "weights": ["uniform"]},
-            },
-            {
                 "key": "tree",
                 "label": "Arbre de decision",
                 "mode": "z",
