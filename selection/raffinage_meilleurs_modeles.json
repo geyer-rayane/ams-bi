@@ -5,30 +5,30 @@
     "mode": "z",
     "params": {
       "max_depth": 5,
-      "criterion": "gini",
+      "criterion": "entropy",
       "min_samples_leaf": 1
     },
-    "val_roc_auc": 0.9999960223037384,
-    "val_f1": 0.999136628534427,
-    "val_accuracy": 0.9988240482140233,
-    "val_precision": 0.9989210185584808,
-    "val_recall": 0.9993523316062176
+    "val_roc_auc": 0.9949292825270145,
+    "val_f1": 0.9844851904090268,
+    "val_accuracy": 0.9789798618256651,
+    "val_precision": 0.9895310796074155,
+    "val_recall": 0.9794905008635578
   },
   "rf": {
     "key": "rf",
     "label": "Foret aleatoire",
     "mode": "z",
     "params": {
-      "n_estimators": 100,
-      "max_depth": null,
+      "n_estimators": 300,
+      "max_depth": 10,
       "max_features": "sqrt",
       "class_weight": null
     },
-    "val_roc_auc": 0.999997215612617,
-    "val_f1": 0.9991362556683222,
-    "val_accuracy": 0.9988240482140233,
-    "val_precision": 0.9993520518358532,
-    "val_recall": 0.9989205526770294
+    "val_roc_auc": 0.9975683348329248,
+    "val_f1": 0.9858879722101607,
+    "val_accuracy": 0.9808907834778774,
+    "val_precision": 0.9914847161572052,
+    "val_recall": 0.9803540587219344
   },
   "cnb": {
     "key": "cnb",
@@ -37,39 +37,39 @@
     "params": {
       "alpha": 1.0
     },
-    "val_roc_auc": 0.9998865859353434,
-    "val_f1": 0.9976267529665588,
-    "val_accuracy": 0.9967661325885638,
-    "val_precision": 0.9969814575247952,
-    "val_recall": 0.998272884283247
+    "val_roc_auc": 0.9463967143433341,
+    "val_f1": 0.9323544834819087,
+    "val_accuracy": 0.9051888872556225,
+    "val_precision": 0.9065878033856822,
+    "val_recall": 0.9596286701208981
   },
   "logreg": {
     "key": "logreg",
     "label": "Regression logistique",
     "mode": "z",
     "params": {
-      "C": 1.0,
-      "class_weight": null
+      "C": 10.0,
+      "class_weight": "balanced"
     },
-    "val_roc_auc": 0.9999975139398365,
-    "val_f1": 0.9993519118600129,
-    "val_accuracy": 0.9991180361605174,
-    "val_precision": 1.0,
-    "val_recall": 0.9987046632124352
+    "val_roc_auc": 0.893916730110922,
+    "val_f1": 0.9280667951188183,
+    "val_accuracy": 0.9012200499779509,
+    "val_precision": 0.9203821656050956,
+    "val_recall": 0.935880829015544
   },
   "svm": {
     "key": "svm",
     "label": "SVM lineaire calibre",
     "mode": "z",
     "params": {
-      "C": 1.0,
-      "class_weight": null
+      "C": 10.0,
+      "class_weight": "balanced"
     },
-    "val_roc_auc": 0.9999984089214954,
-    "val_f1": 0.999460218071899,
-    "val_accuracy": 0.9992650301337646,
-    "val_precision": 0.999568127834161,
-    "val_recall": 0.9993523316062176
+    "val_roc_auc": 0.8872289299440178,
+    "val_f1": 0.9204915450057767,
+    "val_accuracy": 0.8887255622519477,
+    "val_precision": 0.8962978114133769,
+    "val_recall": 0.946027633851468
   },
-  "_best_overall": "svm"
+  "_best_overall": "rf"
 }

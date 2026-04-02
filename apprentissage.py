@@ -27,7 +27,7 @@ DIR_SELECTION = RACINE / "selection"
 def extraire_X_y(df: pd.DataFrame, mode: str) -> tuple[pd.DataFrame, pd.Series]:
     y = df["cible_churn"].astype(int)
     if mode == "z":
-        cols = sorted(c for c in df.columns if c.startswith(("z_", "sit_", "mot_")))
+        cols = sorted(c for c in df.columns if c.startswith(("z_", "sit_")))
     else:
         cols = sorted(c for c in df.columns if c.startswith("cat_"))
     X = df[cols].copy()

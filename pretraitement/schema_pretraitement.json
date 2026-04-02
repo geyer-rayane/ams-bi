@@ -1,9 +1,9 @@
 {
   "entree": "recodage\\union_matrice_modele.csv",
   "n_lignes": 45354,
-  "n_features_init": 34,
+  "n_features_init": 28,
   "pca_95pct": {
-    "n_composantes": 8,
-    "variance_totale_expliquee": 0.953881
+    "n_composantes": 7,
+    "variance_totale_expliquee": 0.950206
   }
 }

@@ -12,8 +12,8 @@ Deux modes :
 Opérations :
   - dérivation d'âge et d'ancienneté selon la source (DTNAIS pour table2, AGEAD pour table1) ;
   - discrétisation quantiles MTREV ;
-  - normalisation StandardScaler + MinMaxScaler ;
-  - one-hot CDSITFAM et CDMOTDEM.
+  - normalisation StandardScaler ;
+  - one-hot CDSITFAM uniquement (CDMOTDEM exclu : quasi-deterministe avec la cible).
 
 Sorties : dossier recodage/
 """
@@ -128,8 +128,7 @@ def preparer_features_union(df: pd.DataFrame) -> pd.DataFrame:
     Mode union complète.
 
     La colonne cible_churn est déjà présente dans union_complete.csv.
-    CDMOTDEM est disponible pour tous les churners de table1 ; NaN pour non-churners
-    de table2 — recodé __MANQUANT__ pour one-hot.
+    CDMOTDEM n'est pas utilisé comme prédicteur (fuite d'information).
     """
     d = derivations_temporelles_union(df)
     d["CDSITFAM"] = d["CDSITFAM"].astype(str)
@@ -143,8 +142,9 @@ def matrice_numerique_normalisee(
 ) -> tuple[pd.DataFrame, dict]:
     """StandardScaler uniquement (z_*). Imputation médiane avant scaling."""
     if cols_num is None:
+        # CDTMT / CDCATCL exclus : trop informatifs par rapport au churn (choix métier).
         cols_num = [
-            "CDSEXE", "MTREV", "NBENF", "CDTMT", "CDCATCL", "BPADH",
+            "CDSEXE", "MTREV", "NBENF", "BPADH",
             "age_ref", "anciennete_adh_ans",
         ]
     cols_num = [c for c in cols_num if c in df.columns]
@@ -158,7 +158,7 @@ def matrice_numerique_normalisee(
 
 def _matrice_categorielle(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Encodage ordinal (entiers >= 0) pour CategoricalNB et BernoulliNB.
+    Encodage ordinal (entiers >= 0) pour CategoricalNB.
 
     - Variables nominales : factorize → 0, 1, 2, ...
     - Variables continues : discrétisation en 5 quantiles → 0..4
@@ -166,13 +166,13 @@ def _matrice_categorielle(df: pd.DataFrame) -> pd.DataFrame:
     """
     out = pd.DataFrame(index=df.index)
 
-    for col, prefix in [("CDSITFAM", "cat_sitfam"), ("CDMOTDEM", "cat_motdem")]:
-        if col in df.columns:
-            codes, _ = pd.factorize(df[col].astype(str).fillna("__NAN__"))
-            out[prefix] = codes
+    if "CDSITFAM" in df.columns:
+        codes, _ = pd.factorize(df["CDSITFAM"].astype(str).fillna("__NAN__"))
+        out["cat_sitfam"] = codes
 
     for col, prefix in [
-        ("CDSEXE", "cat_sexe"), ("CDTMT", "cat_tmt"), ("CDCATCL", "cat_catcl"), ("NBENF", "cat_nbenf"),
+        ("CDSEXE", "cat_sexe"),
+        ("NBENF", "cat_nbenf"),
     ]:
         if col in df.columns:
             s = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
@@ -193,18 +193,17 @@ def _matrice_categorielle(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def matrice_one_hot(df: pd.DataFrame) -> pd.DataFrame:
-    """Numérisation catégorielle (one-hot) pour CDSITFAM et CDMOTDEM."""
-    dummies = pd.get_dummies(
-        df[["CDSITFAM", "CDMOTDEM"]],
-        columns=["CDSITFAM", "CDMOTDEM"],
-        prefix=["sit", "mot"],
+    """One-hot CDSITFAM uniquement. CDMOTDEM exclu (lié à la démission / à la cible)."""
+    return pd.get_dummies(
+        df[["CDSITFAM"]],
+        columns=["CDSITFAM"],
+        prefix=["sit"],
         dtype=int,
     )
-    return dummies
 
 
 def _construire_matrice(prep: pd.DataFrame, nom: str, sortie: Path) -> pd.DataFrame:
-    """Construit et exporte la matrice modèle (z_* + sit_*/mot_* one-hot + cat_*)."""
+    """Construit et exporte la matrice modèle (z_* + sit_* one-hot + cat_*)."""
     num_norm, _ = matrice_numerique_normalisee(prep)
     dummies = matrice_one_hot(prep)
     cat = _matrice_categorielle(prep)
@@ -265,8 +264,9 @@ def main() -> None:
             "MTREV_discrete quantiles",
         ],
         "normalisation": "StandardScaler uniquement (z_*)",
-        "categoriel_nb": "cat_* : encodage ordinal pour CategoricalNB / BernoulliNB",
-        "categoriel": "one-hot (sit_*, mot_*) ; CDMOTDEM manquant → __MANQUANT__",
+        "categoriel_nb": "cat_* : encodage ordinal (sans motif démission)",
+        "categoriel": "one-hot sit_* uniquement ; CDMOTDEM exclu (fuite information)",
+        "exclus_pour_churn": ["CDTMT", "CDCATCL", "CDMOTDEM"],
         "union": {
             "n_lignes": int(len(combine_union)),
             "n_colonnes": int(combine_union.shape[1]),
@@ -285,10 +285,10 @@ def main() -> None:
     )
 
     z_cols = sum(1 for c in combine_union.columns if c.startswith("z_"))
-    sit_cols = sum(1 for c in combine_union.columns if c.startswith(("sit_", "mot_")))
+    sit_cols = sum(1 for c in combine_union.columns if c.startswith("sit_"))
     cat_cols = sum(1 for c in combine_union.columns if c.startswith("cat_"))
     print(f"Recodage OK — union : {len(combine_union)} lignes, {combine_union.shape[1]} colonnes")
-    print(f"  z_* : {z_cols}  |  sit_*/mot_* (one-hot) : {sit_cols}  |  cat_* (NB catégoriel) : {cat_cols}")
+    print(f"  z_* : {z_cols}  |  sit_* (one-hot) : {sit_cols}  |  cat_* : {cat_cols}")
     print(f"  churn=1 : {(combine_union['cible_churn']==1).sum()}  churn=0 : {(combine_union['cible_churn']==0).sum()}")
     print(f"  table2 seule : {len(combine_t2)} lignes (backward-compat)")
 

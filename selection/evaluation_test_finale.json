@@ -1,17 +1,19 @@
 {
-  "algorithme": "svm",
-  "label": "SVM lineaire calibre",
+  "algorithme": "rf",
+  "label": "Foret aleatoire",
   "mode": "z",
   "params": {
-    "C": 1.0,
+    "n_estimators": 300,
+    "max_depth": 10,
+    "max_features": "sqrt",
     "class_weight": null
   },
-  "val_roc_auc": 0.9999984089214954,
+  "val_roc_auc": 0.9975683348329248,
   "test": {
-    "roc_auc": 0.9999918474827064,
-    "f1": 0.9989205526770294,
-    "accuracy": 0.9985302763080541,
-    "precision": 0.9991362556683222,
-    "recall": 0.9987049428016405
+    "roc_auc": 0.9983598527098619,
+    "f1": 0.9876516464471404,
+    "accuracy": 0.9832451499118166,
+    "precision": 0.9913024570558817,
+    "recall": 0.9840276278868983
   }
 }

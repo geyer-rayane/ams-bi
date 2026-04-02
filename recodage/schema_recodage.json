@@ -11,18 +11,23 @@
     "MTREV_discrete quantiles"
   ],
   "normalisation": "StandardScaler uniquement (z_*)",
-  "categoriel_nb": "cat_* : encodage ordinal pour CategoricalNB / BernoulliNB",
-  "categoriel": "one-hot (sit_*, mot_*) ; CDMOTDEM manquant → __MANQUANT__",
+  "categoriel_nb": "cat_* : encodage ordinal (sans motif démission)",
+  "categoriel": "one-hot sit_* uniquement ; CDMOTDEM exclu (fuite information)",
+  "exclus_pour_churn": [
+    "CDTMT",
+    "CDCATCL",
+    "CDMOTDEM"
+  ],
   "union": {
     "n_lignes": 45354,
-    "n_colonnes": 36,
+    "n_colonnes": 26,
     "n_churn_1": 30880,
     "n_churn_0": 14474,
     "taux_churn": 0.680866
   },
   "table2": {
     "n_lignes": 15022,
-    "n_colonnes": 36
+    "n_colonnes": 26
   },
   "fichier_principal_pipeline": "union_matrice_modele.csv"
 }
