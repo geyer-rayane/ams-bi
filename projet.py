@@ -29,6 +29,7 @@ PIPELINE = [
     ("Apprentissage", "apprentissage.py", []),
     ("Raffinage", "raffinage.py", []),
     ("Comparaison", "comparaison.py", []),
+    ("Comparatif", "comparatif.py", []),
     ("Evaluation", "evaluation.py", []),
     ("Interpretation", "interpretation.py", []),
 ]
